@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic To-Do Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+li.completed {
+    background-color: #d4edda;
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+li span {
+    display: flex;
+    gap: 10px;
+}
+
+li button {
+    background-color: #dc3545;
+    cursor: pointer;
+}
+
+li button.edit {
+    background-color: #ffc107;
+    margin-right: 10px;
+}
+
+li button:hover {
+    opacity: 0.8;
+}
+
+    </style>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="input-container">
+            <input type="text" id="task-input" placeholder="Enter a new task...">
+            <button id="add-task-btn">Add Task</button>
+        </div>
+        <h2>Pending Tasks</h2>
+        <ul id="pending-tasks"></ul>
+        <h2>Completed Tasks</h2>
+        <ul id="completed-tasks"></ul>
+    </div>
+    <script>
+        document.getElementById('add-task-btn').addEventListener('click', addTask);
+
+function addTask() {
+    const taskInput = document.getElementById('task-input');
+    const taskText = taskInput.value.trim();
+    if (taskText === "") return;
+
+    const task = {
+        text: taskText,
+        date: new Date().toLocaleString(),
+        completed: false,
+    };
+
+    addTaskToDOM(task);
+    taskInput.value = "";
+}
+
+function addTaskToDOM(task) {
+    const taskList = task.completed ? document.getElementById('completed-tasks') : document.getElementById('pending-tasks');
+
+    const li = document.createElement('li');
+    li.className = task.completed ? 'completed' : '';
+    
+    const taskContent = document.createElement('span');
+    taskContent.innerHTML = <strong>${task.text}</strong><br><small>${task.date}</small>;
+
+    const buttons = document.createElement('span');
+
+    const editBtn = document.createElement('button');
+    editBtn.innerText = 'Edit';
+    editBtn.classList.add('edit');
+    editBtn.addEventListener('click', () => editTask(task, li));
+
+    const completeBtn = document.createElement('button');
+    completeBtn.innerText = task.completed ? 'Undo' : 'Complete';
+    completeBtn.addEventListener('click', () => completeTask(task, li));
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerText = 'Delete';
+    deleteBtn.addEventListener('click', () => deleteTask(li));
+
+    buttons.append(editBtn, completeBtn, deleteBtn);
+    li.append(taskContent, buttons);
+    taskList.appendChild(li);
+}
+
+function editTask(task, li) {
+    const newTaskText = prompt("Edit your task", task.text);
+    if (newTaskText === null || newTaskText.trim() === "") return;
+    
+    task.text = newTaskText.trim();
+    task.date = new Date().toLocaleString();
+    li.querySelector('strong').innerText = task.text;
+    li.querySelector('small').innerText = task.date;
+}
+
+function completeTask(task, li) {
+    task.completed = !task.completed;
+    li.remove();
+    addTaskToDOM(task);
+}
+
+function deleteTask(li) {
+    li.remove();
+}
+
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
